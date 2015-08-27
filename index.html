@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Sorting and Filtering Exercise</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    
+    <body>
+        <script type="text/javascript">
+            "use strict";
+            // using posts array for test data (only returning the top 2 posters since dataset is small)
+            var posts = [
+            {
+                title: 'Waiting 1000 Years for your SO',
+                body: '',
+                created: '2015-04-05',
+                user: {
+                        name: 'Rory',
+                        id: 0
+                    }
+            },
+            {
+                title: 'Better Regeneration',
+                body: '',
+                created: '2014-08-19',
+                user: {
+                        name: 'The Doctor',
+                        id: 1
+                    }
+            },
+            {
+                title: 'The Craziest Alien in All of Time!',
+                body: '',
+                created: '2014-08-09',
+                user: {
+                        name: 'The Doctor',
+                        id: 2
+                    }
+            },
+                        {
+                title: 'The Metaphysical aspects of the Tardis',
+                body: '',
+                created: '2014-08-27',
+                user: {
+                        name: 'The Doctor',
+                        id: 3
+                    }
+            },
+                        {
+                title: 'I am not so Impossible, Really',
+                body: '',
+                created: '2014-08-11',
+                user: {
+                        name: 'Clara',
+                        id: 4
+                    }
+            },
+                        {
+                title: 'The Bright Side of Being Shattered through Time',
+                body: '',
+                created: '2014-08-29',
+                user: {
+                        name: 'Clara',
+                        id: 5
+                    }
+            },           
+                        {
+                title: 'I Saw the Cracks in the Universe, and it was Awesome!',
+                body: '',
+                created: '2014-08-13',
+                user: {
+                        name: 'Amy',
+                        id: 6
+                    }
+            },
+                                    {
+                title: 'My Imaginary Friend',
+                body: '',
+                created: '2014-07-15',
+                user: {
+                        name: 'Amy',
+                        id: 7
+                    }
+            }
+
+            ];
+            
+            // this function is the answer to the project
+            function projectAnswer() {
+                
+                // count number of posts, shove into counts array
+                var counts = {};
+                var i;
+                for (i=0; i < posts.length; i++)  {
+                    var a = posts[i].user.name;
+                    counts[a] = 1 + (counts[a] || 0); 
+                }
+
+                // massage counts to array of objects
+                var newCounts = [];
+                for (var val in counts) {
+                    newCounts.push({
+                        name: val,
+                        numOfPosts: counts[val]    
+                    }); 
+                }
+                
+                // sort by number of posts descending
+                newCounts.sort(function (a, b) {
+                    if (a.numOfPosts > b.numOfPosts) {
+                      return -1;
+                    }
+                    if (a.numOfPosts < b.numOfPosts) {
+                      return 1;
+                    }
+                    // a must be equal to b
+                    return 0;
+                });
+
+                
+                // Return top 30 posters (returning top 2 so it works with posts array)
+                newCounts = newCounts.slice(0, 2);     
+
+                // Use what we know now to pull the top two posters' post objects from posts array, shove into postsSorted array
+                var postsSorted = [];
+                function sortPosts(param) {
+                    for (i=0; i < param.length; i++)  {
+                        param[i];
+                        for (var j=0; j < posts.length; j++) {
+                            if (param[i].name == posts[j].user.name) {
+                                postsSorted.push(posts[j]);
+                            }
+                        }
+                    }
+                }
+                sortPosts(newCounts);
+
+                // sort by created date
+                postsSorted.sort(function (a, b) {
+                    if (a.created > b.created) {
+                      return -1;
+                    }
+                    if (a.created < b.created) {
+                      return 1;
+                    }
+                    // a must be equal to b
+                    return 0;
+                });
+
+                function group(postsSorted){
+                    
+                    // get unique values
+                    var temp = {};
+                    var out = [];
+                    var final = [];
+                    for (var i = 0, l = postsSorted.length; i < l; i++) {
+                      var id = postsSorted[i].user.name;
+                        if (!temp[id]) {
+                            temp[id] = [];
+                            temp[id].push(postsSorted[i]);
+                            }
+                    }
+                    for (var val in temp) {
+                      out.push(temp[val]);
+                    }
+
+                    // Push into final array in format we want, array of objects with (name, last_post_title) 
+                    for (i=0; i < out.length; i++) {
+                                final.push({
+                                    name: out[i][0].user.name,
+                                    last_post_title: out[i][0].title,
+                                });
+                            }
+                    return final;
+                }
+                var postsSorted = group(postsSorted);
+                
+                document.write("<strong>Top 2 Posters' Last Post Sorted by Date: </strong>" +"<br/><br/>" + JSON.stringify(postsSorted));
+            
+            };
+            projectAnswer();
+			
+            </script>
+            
+    </body>
+</html>
