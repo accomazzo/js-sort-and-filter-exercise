@@ -89,98 +89,73 @@
             // this function is the answer to the project
             function projectAnswer() {
                 
-                // count number of posts, shove into counts array
-                var counts = {};
-                var i;
-                for (i=0; i < posts.length; i++)  {
-                    var a = posts[i].user.name;
-                    counts[a] = 1 + (counts[a] || 0); 
-                }
+                function topPosters(count) {
+                var users = [];
 
-                // massage counts to array of objects
-                var newCounts = [];
-                for (var val in counts) {
-                    newCounts.push({
-                        name: val,
-                        numOfPosts: counts[val]    
-                    }); 
-                }
-                
-                // sort by number of posts descending
-                newCounts.sort(function (a, b) {
-                    if (a.numOfPosts > b.numOfPosts) {
-                      return -1;
-                    }
-                    if (a.numOfPosts < b.numOfPosts) {
-                      return 1;
-                    }
-                    // a must be equal to b
-                    return 0;
-                });
+                posts.map(function(post){
+                    var userIndex = users.map(function(user) { return user.name; }).indexOf(post.user.name);
 
-                
-                // Return top 30 posters (returning top 2 so it works with posts array)
-                newCounts = newCounts.slice(0, 2);     
+                    if(userIndex === -1) {
+                        var user = {
+                                    name: post.user.name,
+                                    posts: 1,
+                                    lastPost: { 
+                                                title: post.title,
+                                                date: getDate(post.created)
+                                              }
+                                    };
 
-                // Use what we know now to pull the top two posters' post objects from posts array, shove into postsSorted array
-                var postsSorted = [];
-                function sortPosts(param) {
-                    for (i=0; i < param.length; i++)  {
-                        param[i];
-                        for (var j=0; j < posts.length; j++) {
-                            if (param[i].name == posts[j].user.name) {
-                                postsSorted.push(posts[j]);
-                            }
+                        users.push(user);
+                    } else {
+                        var user = users[userIndex];
+                        var postDate = getDate(post.created);
+
+                        if(postDate > user.lastPost.date) {
+                            user.lastPost = {
+                                title: post.title,
+                                date: postDate
+                            };
                         }
-                    }
-                }
-                sortPosts(newCounts);
 
-                // sort by created date
-                postsSorted.sort(function (a, b) {
-                    if (a.created > b.created) {
-                      return -1;
+                        user.posts++;
                     }
-                    if (a.created < b.created) {
-                      return 1;
-                    }
-                    // a must be equal to b
-                    return 0;
                 });
 
-                function group(postsSorted){
-                    
-                    // get unique values
-                    var temp = {};
-                    var out = [];
-                    var final = [];
-                    for (var i = 0, l = postsSorted.length; i < l; i++) {
-                      var id = postsSorted[i].user.name;
-                        if (!temp[id]) {
-                            temp[id] = [];
-                            temp[id].push(postsSorted[i]);
-                            }
-                    }
-                    for (var val in temp) {
-                      out.push(temp[val]);
-                    }
+                return users.sort(function(a,b){
+                    var x = a.posts;
+                    var y = b.posts;
 
-                    // Push into final array in format we want, array of objects with (name, last_post_title) 
-                    for (i=0; i < out.length; i++) {
-                                final.push({
-                                    name: out[i][0].user.name,
-                                    last_post_title: out[i][0].title,
-                                });
-                            }
-                    return final;
-                }
-                var postsSorted = group(postsSorted);
-                
-                document.write("<strong>Top 2 Posters' Last Post Sorted by Date: </strong>" +"<br/><br/>" + JSON.stringify(postsSorted));
+                    if(x < y) {
+                        return 1;
+                    }
+                    else if(x > y) {
+                        return -1;
+                    }
+                    else {
+                        if(a.lastPost.date < b.lastPost.date)
+                            return 1;
+                        else if(a.lastPost.date > b.lastPost.date)
+                            return -1;
+
+                        return 0;
+                    }
+                }).map(function(user){
+                    return {
+                        name: user.name,
+                        last_post_title: user.lastPost.title
+                    };
+                }).slice(0,2);
+            }
+            document.write("<strong>Top 2 Posters' Last Post Sorted by Date: </strong>" +"<br/><br/>" + JSON.stringify(topPosters(posts)));
+
+            function getDate(dateStr) {
+                var d1s = dateStr.split('-');
+                return new Date(parseInt(d1s[0]),parseInt(d1s[1])-1,parseInt(d1s[2]));
+            }
+   
             
             };
             projectAnswer();
-			
             </script>
             
     </body>
